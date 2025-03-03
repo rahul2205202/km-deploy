@@ -1,4 +1,4 @@
-# Importing JDK and copying required files
+# Stage 1: Build the Spring Boot application
 FROM openjdk:23-jdk AS build
 WORKDIR /app
 COPY pom.xml .
@@ -12,15 +12,27 @@ COPY .mvn .mvn
 RUN chmod +x ./mvnw
 RUN ./mvnw clean package -DskipTests
 
-# Stage 2: Create the final Docker image using OpenJDK 23
+# Stage 2: Create the final Docker image with MySQL
 FROM openjdk:23-jdk
-VOLUME /tmp
+
+# Install MySQL
+RUN apt-get update && apt-get install -y mysql-server
+
+# Configure MySQL (Set root password)
+RUN service mysql start && \
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root123';" && \
+    mysql -e "CREATE DATABASE krushimarket;" && \
+    service mysql stop
 
 # Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
-EXPOSE 8080
 
-ENV SPRING_DATASOURCE_URL jdbc:mysql://krushimarket.cvecmisumk5f.eu-north-1.rds.amazonaws.com:3306/krushimarket
-ENV SPRING_DATASOURCE_USERNAME admin
-ENV SPRING_DATASOURCE_PASSWORD root123
+# Copy application.properties to the container.
+COPY application.properties /app/application.properties
+
+# Expose ports
+EXPOSE 8080
+EXPOSE 3306
+
+# Start MySQL and then the Spring Boot application
+CMD service mysql start && java -jar app.jar
