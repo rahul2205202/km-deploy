@@ -1,15 +1,27 @@
-# Stage 1: Build the Spring Boot application
+# Importing JDK and copying required files
+
 FROM openjdk:23-jdk AS build
+
 WORKDIR /app
+
 COPY pom.xml .
+
 COPY src src
 
+
+
 # Copy Maven wrapper
+
 COPY mvnw .
+
 COPY .mvn .mvn
 
+
+
 # Set execution permission for the Maven wrapper
+
 RUN chmod +x ./mvnw
+
 RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Create the final Docker image with MySQL
@@ -24,11 +36,20 @@ RUN service mysql start && \
     mysql -e "CREATE DATABASE krushimarket;" && \
     service mysql stop
 
+# Stage 2: Create the final Docker image using OpenJDK 23
+
+FROM openjdk:23-jdk
+
+VOLUME /tmp
+
+
+
 # Copy the JAR from the build stage
+
 COPY --from=build /app/target/*.jar app.jar
+
 ENTRYPOINT ["java","-jar","/app.jar"]
 
-# Expose ports
 EXPOSE 8080
 EXPOSE 3306
 
