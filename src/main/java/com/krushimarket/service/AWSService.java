@@ -23,8 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class AWSService {
 
     private final AmazonS3 s3Client;
-    private final String bucketName = "krushimarket";
-    AWSCredentials credentials = new BasicAWSCredentials("", "");
+    private final String bucketName = "krushi-market";
+    AWSCredentials credentials = new BasicAWSCredentials("AKIAYSE4OJY5NIUIWNQM", "nNgnMVS3/TpYxUp+RkP1YCQ+uUa4s00f7DO5e7gD");
     public AWSService() {
         s3Client = AmazonS3ClientBuilder.standard()
         		.withCredentials(new AWSStaticCredentialsProvider(credentials))
