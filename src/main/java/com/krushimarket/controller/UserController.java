@@ -94,6 +94,7 @@ public class UserController {
 	        } catch (IOException e) { // Catch IOException from the service
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image: " + e.getMessage());
 	        } catch (Exception e) {
+			System.out.println(e.getMessage());
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 	        }
 	    }
