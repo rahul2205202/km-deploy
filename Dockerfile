@@ -26,6 +26,7 @@ RUN service mysql start && \
 
 # Copy the JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
 
 # Expose ports
 EXPOSE 8080
